@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_1"
+        android:title="Location"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_2"
+        android:title="Map"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_3"
+        android:title="Crimes"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_4"
+        android:title="Menu 4"
+        app:showAsAction="always"/>
+
+</menu>
+
