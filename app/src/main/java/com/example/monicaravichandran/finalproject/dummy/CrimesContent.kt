@@ -41,7 +41,7 @@ object CrimesContent {
      */
     data class Crime(val id: String, val description: String, val date: String,
                      val lat: String, val lon: String,val block: String,
-                     val case_num:String, val userLocation: LatLng) {
+                     val case_num:String) {
         override fun toString(): String = description
     }
 }
