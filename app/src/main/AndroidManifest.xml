@@ -39,13 +39,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC88H3-k2aZKUOFo8cl4F131jSPMIKZQJA" />
 
+        <service android:name=".LocationTrackingService" />
+
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".ItemListActivity"
             android:label="@string/title_item_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ItemDetailActivity"
             android:label="@string/title_item_detail"
@@ -54,6 +56,20 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.monicaravichandran.finalproject.ItemListActivity" />
+        </activity>
+        <activity android:name=".PlacesActivity" />
+        <activity
+            android:name=".PlaceListActivity"
+            android:label="@string/title_place_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".PlaceDetailActivity"
+            android:label="@string/title_place_detail"
+            android:parentActivityName=".PlaceListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.monicaravichandran.finalproject.PlaceListActivity" />
         </activity>
     </application>
 
