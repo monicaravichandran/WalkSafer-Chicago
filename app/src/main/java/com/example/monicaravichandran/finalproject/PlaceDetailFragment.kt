@@ -54,9 +54,6 @@ class PlaceDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mItem?.let{
             var add = it.address
-            //3510 Michigan Avenue, Chicago, IL 60653, USA
-            //https://www.google.com/maps/dir/?api=1&origin=Space+Needle+Seattle+WA&destination=Pike+Place+Market+Seattle+WA&travelmode=bicycling
-
         }
         direction.setOnClickListener {
             mItem?.let {

@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/menu_4"
-        android:title="Menu 4"
+        android:title="Area Police"
         app:showAsAction="always"/>
 
 </menu>

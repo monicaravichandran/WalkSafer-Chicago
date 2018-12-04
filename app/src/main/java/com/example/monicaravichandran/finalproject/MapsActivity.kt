@@ -179,7 +179,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 return true
             }
             R.id.menu_4 -> {
-                Toast.makeText(this, "Menu 4 is selected", Toast.LENGTH_SHORT).show()
+                val placeIntent = Intent(this,PlaceListActivity::class.java)
+                startActivity(placeIntent)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
