@@ -10,6 +10,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-feature android:name="android.hardware.location.gps" />
 
@@ -40,7 +41,11 @@
             android:value="AIzaSyC88H3-k2aZKUOFo8cl4F131jSPMIKZQJA" />
 
         <service android:name=".LocationTrackingService" />
-
+        <receiver android:name=".CancelActionReceiver">
+            <intent-filter>
+                <action android:name="CANCEL" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />

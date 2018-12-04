@@ -83,7 +83,12 @@ class ItemListActivity : AppCompatActivity() {
                 return true
             }
             R.id.menu_4 -> {
-                Toast.makeText(this, "Menu 4 is selected", Toast.LENGTH_SHORT).show()
+                if(LocationTrackingService.locationChangedBool) {
+                    item_list.adapter.notifyDataSetChanged()
+                    LocationTrackingService.locationChangedBool = false
+                }
+                val placeIntent = Intent(this,PlaceListActivity::class.java)
+                startActivity(placeIntent)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

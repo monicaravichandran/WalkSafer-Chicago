@@ -39,7 +39,7 @@ class PlaceListActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_1 -> {
                 if(LocationTrackingService.placeChangedBool) {
-                    item_list.adapter.notifyDataSetChanged()
+                    place_list.adapter.notifyDataSetChanged()
                     LocationTrackingService.placeChangedBool = false
                 }
                 val intent = Intent(this, MainActivity::class.java)
@@ -48,7 +48,7 @@ class PlaceListActivity : AppCompatActivity() {
             }
             R.id.menu_2 -> {
                 if(LocationTrackingService.placeChangedBool) {
-                    item_list.adapter.notifyDataSetChanged()
+                    place_list.adapter.notifyDataSetChanged()
                     LocationTrackingService.placeChangedBool = false
                 }
                 //Toast.makeText(this, "Menu 2 is selected", Toast.LENGTH_SHORT).show()
@@ -59,7 +59,7 @@ class PlaceListActivity : AppCompatActivity() {
             }
             R.id.menu_3 -> {
                 if(LocationTrackingService.placeChangedBool) {
-                    item_list.adapter.notifyDataSetChanged()
+                    place_list.adapter.notifyDataSetChanged()
                     LocationTrackingService.placeChangedBool = false
                 }
                 val itemIntent = Intent(this, ItemListActivity::class.java)

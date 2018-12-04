@@ -1,30 +1,16 @@
 package com.example.monicaravichandran.finalproject
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.net.Uri
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.support.v4.content.ContextCompat.startActivity
-import android.support.v7.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import android.os.*
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.TextView
-import com.example.monicaravichandran.finalproject.R.layout.activity_main
-import com.example.monicaravichandran.finalproject.R.layout.item_list
 import com.example.monicaravichandran.finalproject.dummy.CrimesContent
 import com.example.monicaravichandran.finalproject.dummy.PlacesContent
-import kotlinx.android.synthetic.main.activity_places.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -33,11 +19,18 @@ import java.time.LocalDateTime
 
 private const val PERMISSION_REQUEST = 10
 class LocationTrackingService : Service() {
+
     var locationManager: LocationManager? = null
-    override fun onBind(intent: Intent?) = null
+    override fun onBind(intent: Intent): IBinder? =null
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return START_STICKY
+    }
+    interface AddLocationListener{
+        fun updateLocation(lat:String,lon:String)
+    }
+    interface AddNotificationListener{
+        fun sendNotification(send:Boolean)
     }
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -70,36 +63,52 @@ class LocationTrackingService : Service() {
                 }
             }
     }
-
     companion object {
         val TAG = "LocationTrackingService"
         //var locationChanged = false
         var locationChangedBool = false
         var placeChangedBool = false
+        var prevLat:Double = 0.0
+        var prevLon:Double = 0.0
+        var prevLatForSpeed= 0.0
+        var prevLonForSpeed = 0.0
+        var locSpeed:Float = 0.0f
+        var firstSent = false
+        var lat:Double = 0.0
+        var lon:Double = 0.0
         val INTERVAL = 1000.toLong() // In milliseconds
         val DISTANCE = 1.toFloat() // In meters
-        lateinit var latt:String
-        lateinit var lonn:String
+        var latt:String = ""
+        var lonn:String = ""
+        lateinit var origActivityNotification:AddNotificationListener
+        lateinit var origActivityLocation:AddLocationListener
         var changed = false
         val locationListeners = arrayOf(
                 LTRLocationListener(LocationManager.GPS_PROVIDER),
                 LTRLocationListener(LocationManager.NETWORK_PROVIDER)
         )
-        fun locationChanged():String{
-            if(changed)
-                return(latt + "," + lonn)
-            else
-                return("NOT CHANGED")
+        fun registerNotificationListener(n0:AddNotificationListener){
+            origActivityNotification = n0
         }
-        class LTRLocationListener(provider: String):android.location.LocationListener {
+        fun registerListener(l0:AddLocationListener){
+            origActivityLocation = l0
+        }
+        class LTRLocationListener(provider: String):android.location.LocationListener{
             val CONNECTON_TIMEOUT_MILLISECONDS = 60000
             val lastLocation = Location(provider)
+
+            //private var locationViewModel: LocationViewModel= ViewModelProviders.of(this).get(LocationViewModel::class.java)
             override fun onLocationChanged(location: Location?) {
                 lastLocation.set(location)
                 Log.d("Service","LATITUDE: " + lastLocation.latitude + "\n\n")
                 Log.d("Service","LONGITUDE: " + lastLocation.longitude + "\n\n")
+                locSpeed = lastLocation.speed
+                lat = lastLocation.latitude
+                lon = lastLocation.longitude
                 latt = lastLocation.latitude.toString()
                 lonn = lastLocation.longitude.toString()
+                //(AddLocationListener).updateLatLocation()
+                origActivityLocation.updateLocation(latt,lonn)
                 CrimesContent.ITEMS.clear()
                 CrimesContent.ITEM_MAP.clear()
                 PlacesContent.ITEM_MAP.clear()
@@ -214,7 +223,6 @@ class LocationTrackingService : Service() {
                         println("JSON parsing exception" + ex.printStackTrace())
                     }
                 }
-
                 override fun onPostExecute(result: String?) {
                     if(LocationTrackingService.latt!=null && LocationTrackingService.lonn!=null) {
                         var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
@@ -278,11 +286,11 @@ class LocationTrackingService : Service() {
                             if(i==15)
                                 break
                         }
+                        counter=0
                     } catch (ex: Exception) {
                         println("JSON parsing exception" + ex.printStackTrace())
                     }
                 }
-
                 override fun onPostExecute(result: String?) {
                     var url ="https://maps.googleapis.com/maps/api/place/details/json?"
                     var key = "&key=AIzaSyCXWBa2-Zuk9xmIBR3Odp23YPuYgOwS71g"
@@ -336,63 +344,40 @@ class LocationTrackingService : Service() {
                         PlacesContent.ITEM_MAP.remove(place.id)
                         PlacesContent.ITEM_MAP.put(place.id,changedPlace)
                         counter++
-                        if(counter==15)
-                            counter=0
                     } catch (ex: Exception) {
                         println("JSON parsing exception" + ex.printStackTrace())
                     }
                 }
+                fun getDistance():Double{
+                    if((prevLat == lat)&&(prevLon == lon)){
+                        return 0.0
+                    }
+                    else{
+                        val theta = prevLon - lon
+                        var dist = Math.sin(Math.toRadians(prevLat)) * Math.sin(Math.toRadians(lat)) + Math.cos(Math.toRadians(prevLat)) * Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(theta))
+                        dist = Math.acos(dist)
+                        dist = Math.toDegrees(dist)
+                        dist = dist * 60.0 * 1.1515
+                        return dist
+                    }
+
+                }
 
                 override fun onPostExecute(result: String?) {
-
-
-                    //GetDirections().execute(url)
-                }
-            }
-            inner class GetDirections : AsyncTask<String, String, String>() {
-
-                override fun onPreExecute() {
-                    // Before doInBackground
-                }
-                override fun doInBackground(vararg urls: String?): String {
-                    var urlConnection: HttpURLConnection? = null
-
-                    try {
-                        val url = URL(urls[0])
-
-                        urlConnection = url.openConnection() as HttpURLConnection
-                        urlConnection.connectTimeout = com.example.monicaravichandran.finalproject.CONNECTON_TIMEOUT_MILLISECONDS
-                        urlConnection.readTimeout = com.example.monicaravichandran.finalproject.CONNECTON_TIMEOUT_MILLISECONDS
-
-                        //var inString = streamToString(urlConnection.inputStream)
-
-                        // replaces need for streamToString()
-                        val inString = urlConnection.inputStream.bufferedReader().readText()
-
-                        publishProgress(inString)
-                    } catch (ex: Exception) {
-                        println("HttpURLConnection exception" + ex)
-                    } finally {
-                        if (urlConnection != null) {
-                            urlConnection.disconnect()
+                    var dist = getDistance()
+                    if(CrimesContent.ITEMS.size > 5&&PlacesContent.ITEMS.size>0 &&locSpeed<100.0){
+                        if(firstSent == false || dist > 3.0){
+                            println("DISTANCE: " + dist)
+                            firstSent = true
+                            prevLat = lat
+                            prevLon = lon
+                            origActivityNotification.sendNotification(true)
                         }
                     }
 
-                    return " "
-                }
-                override fun onProgressUpdate(vararg values: String?) {
-                    try {
-                        println("DONE")
-                    } catch (ex: Exception) {
-                        println("JSON parsing exception" + ex.printStackTrace())
-                    }
-                }
-
-                override fun onPostExecute(result: String?) {
-
-                    println("in the post")
                 }
             }
+
         }
 
     }

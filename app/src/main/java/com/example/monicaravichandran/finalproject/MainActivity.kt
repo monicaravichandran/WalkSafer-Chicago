@@ -1,54 +1,118 @@
 package com.example.monicaravichandran.finalproject
 import android.Manifest
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.ActivityManager
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.app.*
+import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.Icon
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.net.Uri
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import android.os.AsyncTask
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.EditText
 import android.widget.Toast
-import com.example.monicaravichandran.finalproject.dummy.CrimesContent
+import com.example.monicaravichandran.finalproject.dummy.PlacesContent
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONArray
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
-import java.time.LocalDateTime
-import java.util.*
-import kotlin.concurrent.schedule
+
+
+/*
+THINGS TO NOTE BEFORE RUNNING:
+Steps:
+- run with coordinates: (lat,lon) 41.9212,-87.76588
+- click another tab
+- go back to main location tab
+- resent coordinates again with: 41.9213,-87.76588
+- proceed to explore
+- location tab displays location
+- map displays crimes near you and pins their location
+- all crimes are within 1 month of current date
+- click pin to determine name and date of crime
+- crime tab displays in recyclerview format all crimes in the area
+- click crime to view more details
+- area polic tab displays the closest police departments in the area
+- click one to get directions to it
+ */
 
 private const val PERMISSION_REQUEST = 10
-//View.OnClickListener,
 
 @TargetApi(26)
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(),LocationTrackingService.AddLocationListener,LocationTrackingService.AddNotificationListener{
+    private var notificationManager: NotificationManager? = null
+    override fun sendNotification(send: Boolean) {
+        if(send) {
+            println("SENDING NOTIFICATION")
+            notificationHelper()
+        }
+    }
+    fun notificationHelper(){
+        val notificationID = 101
+        var reroute = PlacesContent.ITEMS[0]
+        println("ADDRESS: " + reroute.address)
+        var resultIntent = Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q="+reroute.address.replace(" ","+").replace(",","%2C")));
+        resultIntent.setPackage("com.google.android.apps.maps")
 
+
+        val pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val intentCancel = Intent(this,CancelActionReceiver::class.java)
+        intentCancel.setAction("CANCEL")
+        intentCancel.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntentCancel = PendingIntent.getBroadcast(this, 1, intentCancel, PendingIntent.FLAG_CANCEL_CURRENT)
+
+        val channelID = "com.example.monicaravichandran.finalproject"
+
+        val icon: Icon = Icon.createWithResource(this, android.R.drawable.ic_dialog_info)
+        val action: Notification.Action =
+                Notification.Action.Builder(icon, "Open", pendingIntent).build()
+        //notificationBuilder.addAction(R.drawable.ic_clear_black, "Cancel", pendingIntentCancel);
+        val notification = Notification.Builder(this@MainActivity,
+                channelID)
+                .setContentTitle("Crimes Alert:There are more than 5 crimes near you!")
+                .setContentText("Click to route to the nearest police station")
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setChannelId(channelID)
+                .setContentIntent(pendingIntent)
+                .setActions(action)
+                .addAction(android.R.drawable.ic_notification_clear_all,"Cancel",pendingIntentCancel)
+                .setAutoCancel(true)
+                .build()
+
+        notificationManager?.notify(notificationID, notification)
+
+    }
+
+    private fun createNotificationChannel(id: String, name: String,
+                                          description: String) {
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(id, name, importance)
+        channel.description = description
+        channel.enableLights(true)
+        channel.lightColor = Color.RED
+        channel.enableVibration(true)
+        channel.vibrationPattern =
+                longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+        notificationManager?.createNotificationChannel(channel)
+    }
+
+    override fun updateLocation(lat: String,lon:String) {
+        tvLatitude.text = lat
+        tvLongitude.text = lon
+    }
+    var isBound = false
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-    var recycled: Boolean = false
+    var myService: LocationTrackingService? = null
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
@@ -99,23 +163,49 @@ class MainActivity : AppCompatActivity(){
         }
         return allSuccess
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        tvLatitude.text = "0.0"
-        tvLongitude.text = "0.0"
+        tvLongitude.text = "Getting your longitude..."
+        tvLatitude.text="Getting your latitude..."
+        LocationTrackingService.registerListener(this)
+        LocationTrackingService.registerNotificationListener(this)
+        notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel(
+                "com.example.monicaravichandran.finalproject",
+                "Crimes in Area",
+                "Crimes App")
+        var permission = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkPermission(permissions)) {
+                permission=true
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+                fusedLocationClient.lastLocation
+                        .addOnSuccessListener { location: Location? ->
+                            LocationTrackingService.prevLat = location!!.latitude
+                            LocationTrackingService.prevLon = location!!.longitude
+                            LocationTrackingService.prevLatForSpeed=location!!.latitude
+                            LocationTrackingService.prevLonForSpeed=location!!.longitude
+                            tvLongitude.text = location?.longitude.toString()
+                            tvLatitude.text = location?.latitude.toString()
+                        }
                 startLocationService()
             } else {
                 requestPermissions(permissions, PERMISSION_REQUEST)
             }
         } else {
+            permission=true
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        LocationTrackingService.prevLat = location!!.latitude
+                        LocationTrackingService.prevLon = location!!.longitude
+                        tvLongitude.text = location?.longitude.toString()
+                        tvLatitude.text = location?.latitude.toString()
+                    }
             startLocationService()
-        }
-        Timer("SettingUp", false).schedule(1000) {
-            tvLatitude.text = LocationTrackingService.latt
-            tvLongitude.text = LocationTrackingService.lonn
         }
 
     }
