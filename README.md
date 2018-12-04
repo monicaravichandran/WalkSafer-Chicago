@@ -10,3 +10,6 @@ This is an Android Application written in Kotlin that notifies the user if there
 - Location/GPS Tracking: https://developer.android.com/reference/android/location/LocationManager
 - Google Maps API: https://developers.google.com/maps/documentation/
 
+<div> 
+  <img src="https://github.com/monicaravichandran/WalkSafer-Chicago/blob/master/images/android1.png" style=”float: right; padding: 0px 0px 0px 3px;” width="300"/> <img src="https://github.com/monicaravichandran/WalkSafer-Chicago/blob/master/images/android2.png" width="300"/> 
+<div>
