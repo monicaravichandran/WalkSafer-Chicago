@@ -26,18 +26,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 THINGS TO NOTE BEFORE RUNNING:
 Steps:
 - run with coordinates: (lat,lon) 41.9212,-87.76588
-- click another tab
-- go back to main location tab
-- resent coordinates again with: 41.9213,-87.76588
-- proceed to explore
-- location tab displays location
-- map displays crimes near you and pins their location
-- all crimes are within 1 month of current date
-- click pin to determine name and date of crime
-- crime tab displays in recyclerview format all crimes in the area
-- click crime to view more details
-- area polic tab displays the closest police departments in the area
-- click one to get directions to it
+- if random coordinates pop up (random google location) then change the accelerometer to 41.9211,-87.76588
+- gpx file is provided in the directory if necessary as chicago1.gpx to test user walking
  */
 
 private const val PERMISSION_REQUEST = 10

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" creator="mapstogpx.com" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+  <metadata>
+    <link href="http://www.mapstogpx.com">
+      <text>Sverrir Sigmundarson</text>
+    </link>
+    <!--desc>Map data ©2018 Google</desc-->
+    <!--copyright author="Google Inc">
+    	<year>2018</year>
+    	<license>https://developers.google.com/maps/terms</license>
+    </copyright-->
+    <!--url>https://www.google.co.uk/maps/dir/41.8740911,-87.6740319/41.8751179,-87.6685088/@41.8741522,-87.6749698,16.87z/data=!4m2!4m1!3e2?hl=en</url-->
+    <time>2018-11-30T12:18:41Z</time>
+  </metadata>
+  <wpt lat="41.8740911" lon="-87.6740319">
+    <name>Chicago</name>
+    <desc>1908 W Harrison St, Chicago, IL 60612, USA</desc>
+  </wpt>
+  <wpt lat="41.8751179" lon="-87.6685088">
+    <name>Chicago</name>
+    <desc>1653 W Congress Pkwy, Chicago, IL 60612, USA</desc>
+  </wpt>
+<trk>
+  <name>Chicago to Chicago</name>
+  <number>1</number>
+  <trkseg>
+  <trkpt lat="41.8741253" lon="-87.6740274">
+    <name>TP001</name>
+  </trkpt>
+  <trkpt lat="41.87413" lon="-87.67384">
+    <name>TP002</name>
+  </trkpt>
+  <trkpt lat="41.87414" lon="-87.6727">
+    <name>TP003a</name>
+  </trkpt>  
+  <trkpt lat="41.8741478" lon="-87.6727">
+    <name>TP003b</name>
+  </trkpt>
+  <trkpt lat="41.87415" lon="-87.6727">
+    <name>TP003</name>
+  </trkpt>
+  <trkpt lat="41.8741484" lon="-87.672703">
+    <name>TP004</name>
+  </trkpt>
+  <trkpt lat="41.87447" lon="-87.67271">
+    <name>TP005</name>
+  </trkpt>
+  <trkpt lat="41.8744697" lon="-87.6727062">
+    <name>TP006</name>
+  </trkpt>
+  <trkpt lat="41.87458" lon="-87.67252">
+    <name>TP007</name>
+  </trkpt>
+  <trkpt lat="41.87467" lon="-87.67233">
+    <name>TP008</name>
+  </trkpt>
+  <trkpt lat="41.87474" lon="-87.67214">
+    <name>TP009</name>
+  </trkpt>
+  <trkpt lat="41.87478" lon="-87.67202">
+    <name>TP010</name>
+  </trkpt>
+  <trkpt lat="41.87483" lon="-87.67193">
+    <name>TP011</name>
+  </trkpt>
+  <trkpt lat="41.8749" lon="-87.6718">
+    <name>TP012</name>
+  </trkpt>
+  <trkpt lat="41.87505" lon="-87.67161">
+    <name>TP013</name>
+  </trkpt>
+  <trkpt lat="41.87506" lon="-87.67152">
+    <name>TP014</name>
+  </trkpt>
+  <trkpt lat="41.8750552" lon="-87.671518">
+    <name>TP015</name>
+  </trkpt>
+  <trkpt lat="41.87508" lon="-87.67002">
+    <name>TP016</name>
+  </trkpt>
+  <trkpt lat="41.8751" lon="-87.66942">
+    <name>TP017</name>
+  </trkpt>
+  <trkpt lat="41.87511" lon="-87.66916">
+    <name>TP018</name>
+  </trkpt>
+  <trkpt lat="41.87511" lon="-87.6691">
+    <name>TP019</name>
+  </trkpt>
+  <trkpt lat="41.87512" lon="-87.66851">
+    <name>TP020</name>
+  </trkpt>
+  <trkpt lat="41.8751179" lon="-87.6685088">
+    <name>TP021</name>
+  </trkpt>
+  </trkseg>
+</trk>
+</gpx>
